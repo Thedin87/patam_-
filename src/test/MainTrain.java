@@ -100,7 +100,7 @@ public class MainTrain {
 
 	public static void main(String[] args) {
 		testBag(); // 30 points
-		// testBoard(); // 70 points
+		testBoard(); // 70 points
 		System.out.println("done");				
 	}
 

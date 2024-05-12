@@ -16,6 +16,7 @@ public class Word
         this.tiles = tiles;
         this.row = row;
         this.col = col;
+        this.vertical = vertical;
 
     }
 

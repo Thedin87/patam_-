@@ -8,6 +8,8 @@ public class Board
     private Tile[][] gameBoard = new Tile[15][15];
     private static Board board = null;
     private int[][] specialTiles = new int[15][15];
+    private ArrayList<Word> boardWordList = new ArrayList<Word>();
+    private boolean firstGame = true;
 
     private Board()
     {
@@ -92,30 +94,70 @@ public class Board
 
             }
 
+            if (row != 0)
+            {
+
+                if (gameBoard[row - 1][col] != null && gameBoard[row][col] == null)
+                {
+
+                    validPosition = true;
+
+                }
+
+            }
+            
+            if (row != 14) 
+            {
+
+                if (gameBoard[row + 1][col] != null && gameBoard[row][col] == null)
+                {
+
+                    validPosition = true;
+
+                }
+
+            }
+
             // Ititrate through all the tiles in the word
             for (int tile = 0; tile < wordLength; tile++)
             {
 
                 // If the Tile letter is equal to the letter on the board the word is valid
-                if (gameBoard[tile + row][col].letter == tiles[tile].letter)
+                if (gameBoard[tile + row][col] == tiles[tile])
                 {
 
                     validPosition = true;
 
                 }
                 // If the Tile isnt empty and has another letter in it return false
-                else if (gameBoard[row + tile][col].letter != tiles[tile].letter && gameBoard[row + tile][col] != null)
+                else if (gameBoard[row + tile][col] != tiles[tile] && gameBoard[row + tile][col] != null)
                 {
 
                     return false;
 
                 }
 
-                // If the letter is next to a position with a tile the word is valid
-                if ((gameBoard[tile + row + 1][col] != null || gameBoard[tile + row - 1][col] != null || gameBoard[tile + row][col + 1] != null || gameBoard[tile + row][col - 1] != null) && gameBoard[tile + row][col] == null)
+                if (col != 0)
                 {
 
-                    validPosition = true;
+                    if (gameBoard[tile + row][col - 1] != null && gameBoard[tile + row][col] == null)  
+                    {
+
+                        validPosition = true;
+
+                    }
+
+                }
+
+                if (col != 14)
+                {
+
+                    if (gameBoard[tile + row][col + 1] !=  null && gameBoard[tile + row][col] == null)  
+                    {
+
+                        validPosition = true;
+
+                    }
 
                 }
 
@@ -139,26 +181,67 @@ public class Board
 
             }
 
-            for (int tile = 0; tile < wordLength; tile++)
+            if (col != 0)
             {
 
-                if (gameBoard[row][col + tile].letter == tiles[tile].letter)
+                if (gameBoard[row][col - 1] != null && gameBoard[row][col] == null)
                 {
 
                     validPosition = true;
 
                 }
-                else if (gameBoard[row][col + tile].letter != tiles[tile].letter && gameBoard[row][col + tile] != null)
+
+            }
+            
+            if (col != 14) 
+            {
+
+                if (gameBoard[row][col + 1] != null && gameBoard[row][col] == null)
+                {
+
+                    validPosition = true;
+
+                }
+
+            }
+
+            for (int tile = 0; tile < wordLength; tile++)
+            {
+
+                if (gameBoard[row][col + tile] == tiles[tile])
+                {
+
+                    validPosition = true;
+
+                }
+                else if (gameBoard[row][col + tile] != tiles[tile] && gameBoard[row][col + tile] != null)
                 {
 
                     return false;
 
                 }
 
-                if ((gameBoard[row + 1][col + tile] != null || gameBoard[row - 1][col + tile] != null || gameBoard[row][col + tile + 1] != null || gameBoard[row][col + tile - 1] != null) && gameBoard[row][col + tile] == null)
+                if (row != 0)
                 {
 
-                    validPosition = true;
+                    if (gameBoard[row - 1][col + tile] != null && gameBoard[row][col + tile] == null)  
+                    {
+
+                        validPosition = true;
+
+                    }
+
+                }
+
+                if (col != 14)
+                {
+
+                    if (gameBoard[row + 1][col + tile]  != null && gameBoard[row][col + tile] == null)  
+                    {
+
+                        validPosition = true;
+
+                    }
 
                 }
 
@@ -181,7 +264,7 @@ public class Board
 
     }
 
-    public boolean dictonaryLegal()
+    public boolean dictonaryLegal(Word word)
     {
 
         return true;
@@ -193,27 +276,19 @@ public class Board
 
         ArrayList<Word> wordList = new ArrayList<Word>();
         Tile[] tiles = word.getTiles();
-        boolean vertical = word.isVertical();
+        boolean isVertical = word.isVertical();
         int row = word.getRow();
         int col = word.getCol();
 
         wordList.add(word);
 
         // Check if the word is vertical
-        if (vertical)
+        if (isVertical)
         {
 
             // Ititrate through all the letters in the word
             for (int tile = 0; tile < tiles.length; tile++)
             {
-
-                // If the square isnt null the the word wont be new so it wont get more points
-                if (gameBoard[row + tile][col] != null)
-                {
-
-                    continue;
-
-                }
 
                 // Check if the tile to the left isnt null
                 if (gameBoard[row + tile][col - 1] != null && col != 0)
@@ -234,14 +309,14 @@ public class Board
 
                     }
 
-                    Word newWord = createWord(row + tile, currentCol, false, col);
+                    Word newWord = createWord(row + tile, currentCol + 1, false, col, tiles[tile]);
                     wordList.add(newWord);
 
                 }
                 else if (gameBoard[row + tile][col - 1] == null && gameBoard[row + tile][col + 1] != null)
                 {
 
-                    Word newWord = createWord(row + tile, col, false, col);
+                    Word newWord = createWord(row + tile, col, false, col, tiles[tile]);
                     wordList.add(newWord);
 
                 }
@@ -256,19 +331,11 @@ public class Board
             for (int tile = 0; tile < tiles.length; tile++)
             {
 
-                // If the square isnt null the the word wont be new so it wont get more points
-                if (gameBoard[row][col + tile] != null)
-                {
-
-                    continue;
-
-                }
-
                 // Check if the tile above isnt null
                 if (gameBoard[row - 1][col + tile] != null && row != 0)
                 {
 
-                    int currentRow = row; 
+                    int currentRow = row - 1; 
 
                     while (currentRow < 15 && currentRow >= 0)
                     {
@@ -283,14 +350,14 @@ public class Board
 
                     }
 
-                    Word newWord = createWord(currentRow, col + tile, true, row);
+                    Word newWord = createWord(currentRow + 1, col + tile, true, row, tiles[tile]);
                     wordList.add(newWord);
 
                 }
                 else if (gameBoard[row - 1][col + tile] == null && gameBoard[row + 1][col + tile] != null)
                 {
 
-                    Word newWord = createWord(row, col + tile, true, row);
+                    Word newWord = createWord(row, col + tile, true, row, tiles[tile]);
                     wordList.add(newWord);
 
                 }
@@ -305,7 +372,7 @@ public class Board
 
     }
 
-    public Word createWord(int row, int col, boolean vertical, int cuurentChar)
+    public Word createWord(int row, int col, boolean vertical, int currentChar, Tile currentTile)
     {
 
         ArrayList<Tile> tilesList = new ArrayList<Tile>();
@@ -324,10 +391,10 @@ public class Board
                     tilesList.add(gameBoard[currentRow][col]);
 
                 }
-                else if (currentRow == cuurentChar)
+                else if (currentRow == currentChar)
                 {
 
-                    tilesList.add(gameBoard[cuurentChar][col]);
+                    tilesList.add(currentTile);
 
                 }
                 else
@@ -356,10 +423,10 @@ public class Board
                     tilesList.add(gameBoard[row][currentCol]);
 
                 }
-                else if (currentCol == cuurentChar)
+                else if (currentCol == currentChar)
                 {
 
-                    tilesList.add(gameBoard[row][cuurentChar]);
+                    tilesList.add(currentTile);
 
                 }
                 else
@@ -393,29 +460,13 @@ public class Board
         boolean vertical = word.isVertical();
         int multiplier = 1;
         int wordBeforeMultiplier = 0;
-        boolean firstGame = true;
-
-        outerloop:
-        for (int i = 0; i < gameBoard.length; i++)
-        {
-
-            for (int j = 0; j < gameBoard.length; j++)
-            {
-
-                if (gameBoard[i][j] != null)
-                    firstGame = false;
-                    break outerloop;
-
-            }
-
-        }
 
         for (int tile = 0; tile < tiles.length; tile ++)
         {
 
             int currentRow;
             int currentCol;
-            int currentTileScore = tiles[tile].score;
+            int currentTileScore;
 
             if (vertical)
             {
@@ -429,6 +480,19 @@ public class Board
 
                 currentCol = col + tile;
                 currentRow = row;
+
+            }
+
+            if (tiles[tile] == null)
+            {
+
+                currentTileScore = gameBoard[currentRow][currentCol].score;
+
+            }
+            else
+            {
+
+                currentTileScore = tiles[tile].score;
 
             }
 
@@ -455,6 +519,7 @@ public class Board
 
                 case 11:
                     if (firstGame){
+                        firstGame = false;
                         multiplier = multiplier * 2;
                         wordBeforeMultiplier += currentTileScore;
                     }
@@ -523,14 +588,33 @@ public class Board
         Word fullWord = new Word(newTiles, row, col, vertical);
 
         if (boardLegal(fullWord) == false)
+        {
+
             return 0;
+
+        }
 
         ArrayList<Word> wordList = getWords(fullWord);
 
+        outerloop:
         for (Word w: wordList)
         {
 
-            totalScore += getScore(w);
+            for (Word bw: boardWordList)
+            {
+
+                if (w.equals(bw))
+                {
+
+                    continue outerloop;
+
+                }
+
+            }
+
+            if (dictonaryLegal(w))
+                boardWordList.add(w);
+                totalScore += getScore(w);
 
         }
 
@@ -551,6 +635,7 @@ public class Board
                     currentCol = col;
 
                 }
+                else
                 {
 
                     currentRow = row;

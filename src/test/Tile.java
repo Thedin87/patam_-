@@ -114,7 +114,6 @@ final class Tile
             if (alphabet.indexOf(tile) == -1)
             {
 
-                System.out.println("The char isnt valid");
                 return null;
 
             }
@@ -167,13 +166,7 @@ final class Tile
         public void put(Tile tile)
         {
 
-            if (currentTilesTotal >= 98)
-            {
-
-                System.out.println("Cant add more tiles to the bag");
-
-            }
-            else
+            if (currentTilesTotal < 98)
             {
 
                 char tileChar = tile.letter;
